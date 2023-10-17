@@ -1,0 +1,25 @@
+
+::ng-deep {
+    .actions-container {
+        display: flex;
+        justify-content: end;
+    }
+    .actions-item { 
+        margin-left: 5px; margin-right: 5px; 
+        .mat-form-field-infix { display: flex;}
+    }
+
+    table[mat-table] {
+        width: 100%;
+    }
+
+    // .mat-form-field-infix {
+
+    // margin-top: 0px;
+    // border-top-width: 0px;
+    // padding-top: 0px;
+    // margin-bottom: 0px;
+    // bottom: 2px;
+
+    // }
+}

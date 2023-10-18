@@ -1,6 +1,6 @@
 export interface ITarefa {
     id: number;
     descricao?: string;
-    data: string;
+    dataCriacao: string;
     status: number;
 }

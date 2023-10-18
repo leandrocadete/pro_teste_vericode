@@ -7,7 +7,10 @@ using Model.Interfaces.Repository;
 using Adapter.Repository;
 using System.ComponentModel;
 using System.CodeDom;
-
+using Domain.Interfaces.Services;
+using Service.TarefaService;
+using Domain.Interfaces.Adapter.Receiver;
+using Adapter.RabbitMQ.Receiver;
 
 namespace Worker
 {
@@ -27,24 +30,17 @@ namespace Worker
             catch  (Exception ex)
             {
                 Console.Error.WriteLine(ex);
-            }
-            //Init(args);
+            }            
         }
 
-        private static void Init(string[] args)
-        {
-            using IHost host = CreateHostBuilder(args).Build();
-
-            using var scope = host.Services.CreateScope();
-
-            var services = scope.ServiceProvider;
-        }
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder().ConfigureServices((_, services) =>
             {
                 services
                 .AddTransient<ITarefaRepository, TarefaRepository>()
+                .AddTransient<ITarefaReceiverAdapter, TarefaReceiverAdapter>()
+                .AddTransient<ITarefaReceiverService, TarefaReceiverService>()
                 .AddSingleton<App>();
             });
         }

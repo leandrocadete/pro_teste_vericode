@@ -26,17 +26,12 @@ export class TarefaService {
   }
 
   public add(tarefa :ITarefa) {
-    
-
     return this.http.post(`${this.apiUrl}/Tarefa`, tarefa, { headers: this.header_node});
   }
 
   public Search(tarefa: ITarefa) {
-    return this.http.get(`${this.apiUrl}/${tarefa.descricao}`);
+    return this.http.get<ITarefa[]>(`${this.apiUrl}/Tarefa/${tarefa.descricao}`);
   }
 
-  public testWeahter() {
-    return this.http.get(`${this.apiUrl}/WeatherForecast`);
-  }
 
 }

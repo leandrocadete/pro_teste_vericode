@@ -1,5 +1,6 @@
 using System;
 using Domain.Entities;
+using Domain.Interfaces.Adapter.Receiver;
 using Domain.Interfaces.Adapter.Sender;
 using Domain.Interfaces.Services;
 using Model.Interfaces.Repository;
@@ -11,6 +12,7 @@ namespace Service.TarefaService {
     {
         private ITarefaSenderAdapter _tarefaSenderAdapter;
         private ITarefaRepository _tarefaRepository;
+        private ITarefaReceiverAdapter _tarefaReceiverAdapter;
 
         public TarefaService(ITarefaSenderAdapter tarefaSenderAdapter, ITarefaRepository tarefaRepository)
         {
@@ -24,7 +26,7 @@ namespace Service.TarefaService {
         /// <returns></returns>
         public bool Add(Tarefa tarefa)
         {
-            tarefa.DataCriacao = DateTime.Now;
+            tarefa.DataCriacao = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:fff");
             return _tarefaSenderAdapter.Add(tarefa); 
         }
         /// <summary>
@@ -36,6 +38,7 @@ namespace Service.TarefaService {
         {
             return _tarefaRepository.Search(tarefa);
         }
+
     }
 }
 

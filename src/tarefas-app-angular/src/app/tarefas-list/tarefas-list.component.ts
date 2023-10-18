@@ -7,8 +7,8 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NovaTarefaDialogComponent } from '../nova-tarefa-dialog/nova-tarefa-dialog.component';
-
-
+import { TarefaService } from '../tarefa.service';
+import { FormControl, FormGroup } from '@angular/forms';
 
 const MY_FORMATS = {
   parse: {
@@ -37,14 +37,18 @@ const MY_FORMATS = {
 })
 export class TarefasListComponent implements OnInit {
   private dialogRef!: MatDialogRef<NovaTarefaDialogComponent>;
- 
-  public columns = ['descricao', 'data', 'status'];
+
+  public formSearch: FormGroup = new FormGroup({
+    descricao: new FormControl('')
+  });
+
+  public columns = ['descricao', 'dataCriacao', 'status'];
   public dataSource: MatTableDataSource<ITarefa>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  
 
-  constructor(private dialog: MatDialog) {
+
+  constructor(private dialog: MatDialog, private tarefaService: TarefaService) {
     this.dataSource = new MatTableDataSource()
   }
 
@@ -57,5 +61,29 @@ export class TarefasListComponent implements OnInit {
   novaTarefa() {
     this.dialogRef = this.dialog.open(NovaTarefaDialogComponent);
     this.dialogRef.componentInstance.refDialog = this.dialogRef;
+  }
+
+  buscar() {
+    let tarefaSearch: ITarefa = {
+      dataCriacao: "", id: 0, status: 0, descricao: this.formSearch.get('descricao')?.value
+    }
+    this.tarefaService.Search(tarefaSearch).subscribe(
+      {
+        next: (resp) => {
+          resp.map(t => {
+            let index = t.dataCriacao.lastIndexOf(':');
+            let dtSubString = t.dataCriacao.substring(0, index);
+            //console.log(dtSubString)
+            let dt = new Date(dtSubString).toLocaleString();
+            
+            t.dataCriacao = dt;
+          });
+          this.dataSource = new MatTableDataSource(resp)
+          console.table(resp)
+        },
+        error: (err) => console.error(err),
+        complete: () => console.info("implementar loading ")
+      }
+    );
   }
 }

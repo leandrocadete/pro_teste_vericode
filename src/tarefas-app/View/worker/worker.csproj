@@ -3,15 +3,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\adapter\repository\repository.csproj" />
     <ProjectReference Include="..\..\domain\domain.csproj" />
+    <ProjectReference Include="..\..\application\service\service.csproj" />
+    <ProjectReference Include="..\..\adapter\rabbitMQReceiver\rabbitMQReceiver.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="6.6.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
   
-    <None Include="tarefas.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    
 
   </ItemGroup>
   <PropertyGroup>

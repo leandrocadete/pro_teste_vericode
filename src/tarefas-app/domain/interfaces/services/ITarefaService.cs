@@ -6,5 +6,7 @@ namespace Domain.Interfaces.Services {
         public bool Add(Tarefa tarefa);
         
         public IEnumerable<Tarefa> Search(Tarefa tarefa);
+
+        
     }
 }

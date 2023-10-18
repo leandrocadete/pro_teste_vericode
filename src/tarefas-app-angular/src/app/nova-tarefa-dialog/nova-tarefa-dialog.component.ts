@@ -19,11 +19,7 @@ export class NovaTarefaDialogComponent implements OnInit {
   constructor(private tarefaService: TarefaService, private snack: MatSnackBar) { }
 
   ngOnInit(): void {
-    this.tarefaService.testWeahter().subscribe({
-      next: (r) => console.table(r),
-      error: (err) => console.error(err),
-      complete: () => console.info('Done!')
-    });
+    
   }
 
   public Add() {
@@ -32,7 +28,7 @@ export class NovaTarefaDialogComponent implements OnInit {
     let itarefa: ITarefa = {
       id: 0, 
       descricao: desc?.toString(), 
-      data: (new Date).toISOString(), 
+      dataCriacao: (new Date).toISOString(), 
       status: 1
     }
 
@@ -45,7 +41,7 @@ export class NovaTarefaDialogComponent implements OnInit {
       error: (err) => {
         console.error(err)
       },
-      complete: this.refDialog.close
+      complete: () => this.refDialog.close()
     });
   }
 

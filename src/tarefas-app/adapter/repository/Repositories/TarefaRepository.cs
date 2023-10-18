@@ -11,7 +11,19 @@ namespace Adapter.Repository;
 
 public class TarefaRepository : ITarefaRepository
 {
-    private const string strConnection = "Data Source=tarefas.db;version=3;";
+    string _dbPath = "tarefas.db";
+
+    private string strConnection = "";
+    public TarefaRepository()
+    {
+        #if DEBUG
+        
+        _dbPath = "../../adapter/repository/tarefas.db";
+        
+        #endif
+
+        strConnection = $"Data Source={_dbPath};version=3;";
+    }
     public bool Add(Tarefa tarefa)
     {
         System.Console.WriteLine("Vai adicionar!");
@@ -29,7 +41,7 @@ VALUES
                 {
                     Descricao = tarefa.Descricao,
                     Status = tarefa.Status,
-                    DataCriacao = tarefa.DataCriacao.Value.ToString("yyyy-MM-ddTHH:mm:ss:fff")
+                    DataCriacao = tarefa.DataCriacao
                 });
             }
         }
@@ -44,13 +56,18 @@ VALUES
     public IEnumerable<Tarefa> Search(Tarefa tarefa)
     {
         string sql = @"
-SELECT Id, Descricao, Status, DataCriacao FROM Tarefa 
-WHERE @Descricao like '%' + @Descricao + '%'
+SELECT 
+     Id, Descricao, Status, DataCriacao
+FROM 
+    Tarefa 
+where 
+    Descricao like @Descricao
         ";
         using (var conn = new SQLiteConnection(strConnection))
         {
-            ;
-            var ret = conn.Query<Tarefa>(sql, tarefa);
+            Console.WriteLine(sql);
+            var ret = conn.Query<Tarefa>(sql, new { Descricao = $"%{tarefa.Descricao}%" });
+            System.Console.WriteLine(ret.Count());
             return ret;
         }
     }

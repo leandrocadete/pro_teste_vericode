@@ -30,13 +30,27 @@ public class TarefaController : ControllerBase
         }
     }
 
-    [HttpGet("/{descricao}")]
+    [HttpGet("{descricao}")]
     public IActionResult Get(string descricao)
     {
         try
         {
-            _tarefaService.Search(new Tarefa() { Descricao = descricao});
-            return Ok();
+            var r = _tarefaService.Search(new Tarefa() { Descricao = descricao});
+            return Ok(r);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Erro ao buscar tarefas {ex.Message}" });
+        }
+    }
+
+    [HttpGet()]
+    public IActionResult GetAll()
+    {
+        try
+        {
+            var r = _tarefaService.Search(new Tarefa() { Descricao = ""});
+            return Ok(r);
         }
         catch (Exception ex)
         {

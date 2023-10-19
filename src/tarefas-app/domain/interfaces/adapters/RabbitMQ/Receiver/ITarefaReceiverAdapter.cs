@@ -6,5 +6,5 @@ namespace Domain.Interfaces.Adapter.Receiver;
 
 public interface ITarefaReceiverAdapter {
 
-    public bool Add(Tarefa tarefa);
+    public void RunWorker();
 }

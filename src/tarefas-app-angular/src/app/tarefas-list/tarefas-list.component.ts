@@ -7,8 +7,9 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/materia
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MomentDateAdapter } from '@angular/material-moment-adapter';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { NovaTarefaDialogComponent } from '../nova-tarefa-dialog/nova-tarefa-dialog.component';
-
-
+import { TarefaService } from '../tarefa.service';
+import { FormControl, FormGroup } from '@angular/forms';
+import { Tarefa } from '../model/entities/tarefa';
 
 const MY_FORMATS = {
   parse: {
@@ -36,26 +37,87 @@ const MY_FORMATS = {
   ]
 })
 export class TarefasListComponent implements OnInit {
+  public showSpinner : boolean = false;
   private dialogRef!: MatDialogRef<NovaTarefaDialogComponent>;
- 
-  public columns = ['descricao', 'data', 'status'];
-  public dataSource: MatTableDataSource<ITarefa>;
+
+  public formSearch: FormGroup = new FormGroup({
+    descricao: new FormControl('')
+  });
+
+  public columns = ['descricao', 'dataCriacao', 'status'];
+  public dataSource: MatTableDataSource<Tarefa>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  
 
-  constructor(private dialog: MatDialog) {
+
+  constructor(private dialog: MatDialog, private tarefaService: TarefaService) {
     this.dataSource = new MatTableDataSource()
+    this.showSpinner = false;
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    
+
+    this.buscar();
+   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+   
   }
   novaTarefa() {
     this.dialogRef = this.dialog.open(NovaTarefaDialogComponent);
     this.dialogRef.componentInstance.refDialog = this.dialogRef;
   }
+
+  buscar() {
+    let tarefaSearch: ITarefa = {
+      dataCriacao: "", id: 0, status: 0, descricao: this.formSearch.get('descricao')?.value
+    }
+    this.showSpinner = true;
+
+    this.tarefaService.Search(tarefaSearch).subscribe(
+      {
+        next: (resp) => {
+          resp.map(t => {
+            let index = t.dataCriacao.lastIndexOf(':');
+            let dtSubString = t.dataCriacao.substring(0, index);
+            let dt = new Date(dtSubString).toLocaleString();
+            t.dataCriacao = dt;
+            t.dataCriacaoNumerica = Date.parse(dtSubString);
+
+          });
+
+          resp.sort((a, b) => b.dataCriacaoNumerica - a.dataCriacaoNumerica);
+          this.dataSource = new MatTableDataSource(resp)
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+        },
+        error: (err) => { console.error(err); this.showSpinner = false; },
+        complete: () => this.showSpinner = false
+      }
+    );
+  }
+
+
+  getDscStatus(nStatus: number) {
+    let r = "";
+    switch (nStatus) {
+      case 1:
+        r = "Pendente";
+        break;
+      case 2:
+        r = "Em Execução";
+        break;
+      case 3:
+        r = "Finalizada";
+        break;
+      case 4: 
+        r = "Cancelada";
+        break;
+      default:
+        r = "Pendente";
+    }
+    return r;
+  }
+
 }

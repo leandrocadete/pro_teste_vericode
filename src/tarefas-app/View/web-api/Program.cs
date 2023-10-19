@@ -7,6 +7,10 @@ using Domain.Interfaces.Adapter.Sender;
 using Adapter.RabbitMQ.Sender;
 using Model.Interfaces.Repository;
 using Adapter.Repository;
+using Service;
+
+var process = System.Diagnostics.Process.GetCurrentProcess();
+Console.Title = $"WebApi: {process.Id}";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +24,9 @@ builder.Services
     .AddTransient<ITarefaService, TarefaService>()
     .AddTransient<ITarefaSenderAdapter, TarefaSenderAdapter>()    
     .AddTransient<ITarefaRepository, TarefaRepository>()
+    
+    .AddTransient<ILogRepository, LogRepository>()
+    .AddTransient<ILogService, LogService>()
     ;
 
 

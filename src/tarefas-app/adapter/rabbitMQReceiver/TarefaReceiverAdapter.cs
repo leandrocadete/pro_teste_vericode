@@ -5,6 +5,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
 using Model.Interfaces.Repository;
+using Domain.Interfaces.Services;
 
 namespace Adapter.RabbitMQ.Receiver
 {
@@ -12,15 +13,21 @@ namespace Adapter.RabbitMQ.Receiver
     {
         const string queueName = "add_tarefa_queue";
         private readonly ITarefaRepository _tarefaRepository;
-        public TarefaReceiverAdapter(ITarefaRepository tarefaRepository)
+        private readonly ILogService _logService;
+
+        public TarefaReceiverAdapter(
+            ITarefaRepository tarefaRepository,
+            ILogService logService
+            )
         {
             _tarefaRepository = tarefaRepository;
+            _logService = logService;
         }
-        
+
         public void RunWorker()
         {
             System.Console.WriteLine("Worker iniciado ...");
-            
+
             const string queueName = "add_tarefa_queue";
 
             var factory = new ConnectionFactory { HostName = "localhost" };
@@ -53,22 +60,28 @@ namespace Adapter.RabbitMQ.Receiver
                 System.Console.WriteLine("Call back");
                 var body = ea.Body.ToArray();
                 string messages = Encoding.UTF8.GetString(body);
-                // Console.WriteLine(">{0}", messages);
 
-                // int dots = messages.Split('.').Length - 1;
-                // for (int i = 0; i < dots; i++)
-                // {
-                //     System.Threading.Tasks.Task.Delay(1000).Wait();
-                //     Console.Write(".");
-                // }
                 System.Console.WriteLine("Mensagem Json: {0}", messages);
                 var tarefa = JsonSerializer.Deserialize<Tarefa>(messages);
-                //System.Console.WriteLine("TarefaRepository == null? {0}", _tarefaRepository == null);
-                bool ok = _tarefaRepository.Add(tarefa);
-                if(ok)
-                    Console.WriteLine($"\n{ok} - Nova tarefa cadastrada!");
-                else {
-                    Console.WriteLine($"\n{ok} - Não cadastrada!");
+
+                try
+                {
+                    bool ok = _tarefaRepository.Add(tarefa);
+                    string strLogInfo = "";
+                    System.Console.WriteLine();
+                    if (ok)
+                    {
+                        Console.WriteLine(strLogInfo = $"{ok} - Worker: Nova tarefa cadastrada!");
+                    }
+                    else
+                    {
+                        Console.WriteLine(strLogInfo = $"{ok} - Worker: Não cadastrada!");
+                    }
+                    _logService.GravarLogInfo(strLogInfo, tarefa.DataCriacao);
+                }
+                catch (Exception ex)
+                {
+                    _logService.GravarLogErro(messages, ex.Message);
                 }
                 channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
             };

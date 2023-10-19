@@ -7,55 +7,55 @@ using System.Data.SQLite;
 using System.Data;
 using System.Reflection;
 
-namespace Adapter.Repository;
-
-public class TarefaRepository : ITarefaRepository
+namespace Adapter.Repository
 {
-    string _dbPath = "tarefas.db";
 
-    private string strConnection = "";
-    public TarefaRepository()
+    public class TarefaRepository : ITarefaRepository
     {
-        #if DEBUG
-        
-        _dbPath = "../../adapter/repository/tarefas.db";
-        
-        #endif
+        string _dbPath = "tarefas.db";
+        private string strConnection = "";
+        public TarefaRepository()
+        {
+#if DEBUG
 
-        strConnection = $"Data Source={_dbPath};version=3;";
-    }
-    public bool Add(Tarefa tarefa)
-    {
-        System.Console.WriteLine("Vai adicionar!");
-        string sql = @"
+            _dbPath = "../../adapter/repository/tarefas.db";
+
+#endif
+
+            strConnection = $"Data Source={_dbPath};version=3;";
+        }
+        public bool Add(Tarefa tarefa)
+        {
+            System.Console.WriteLine("Vai adicionar!");
+            string sql = @"
 INSERT INTO Tarefa 
     (Descricao, Status, DataCriacao) 
 VALUES 
     (@Descricao, @Status, @DataCriacao);
         ";
-        try
-        {
-            using (var conn = new SQLiteConnection(strConnection))
+            try
             {
-                conn.Query(sql, new
+                using (var conn = new SQLiteConnection(strConnection))
                 {
-                    Descricao = tarefa.Descricao,
-                    Status = tarefa.Status,
-                    DataCriacao = tarefa.DataCriacao
-                });
+                    conn.Execute(sql, new
+                    {
+                        Descricao = tarefa.Descricao,
+                        Status = tarefa.Status,
+                        DataCriacao = tarefa.DataCriacao
+                    });
+                }
             }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine("Erro no Add: {0}", ex);
+                throw;
+            }
+            return true;
         }
-        catch (Exception ex)
-        {
-            System.Console.WriteLine("Erro no Add: {0}", ex);
-            Console.ReadLine();
-        }
-        return true;
-    }
 
-    public IEnumerable<Tarefa> Search(Tarefa tarefa)
-    {
-        string sql = @"
+        public IEnumerable<Tarefa> Search(Tarefa tarefa)
+        {
+            string sql = @"
 SELECT 
      Id, Descricao, Status, DataCriacao
 FROM 
@@ -63,12 +63,13 @@ FROM
 where 
     Descricao like @Descricao
         ";
-        using (var conn = new SQLiteConnection(strConnection))
-        {
-            Console.WriteLine(sql);
-            var ret = conn.Query<Tarefa>(sql, new { Descricao = $"%{tarefa.Descricao}%" });
-            System.Console.WriteLine(ret.Count());
-            return ret;
+            using (var conn = new SQLiteConnection(strConnection))
+            {
+                Console.WriteLine(sql);
+                var ret = conn.Query<Tarefa>(sql, new { Descricao = $"%{tarefa.Descricao ?? ""}%" });
+                System.Console.WriteLine(ret.Count());
+                return ret;
+            }
         }
     }
 }

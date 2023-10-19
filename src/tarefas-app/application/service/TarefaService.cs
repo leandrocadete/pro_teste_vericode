@@ -12,12 +12,17 @@ namespace Service.TarefaService {
     {
         private ITarefaSenderAdapter _tarefaSenderAdapter;
         private ITarefaRepository _tarefaRepository;
-        private ITarefaReceiverAdapter _tarefaReceiverAdapter;
+        private ILogService _logService;        
 
-        public TarefaService(ITarefaSenderAdapter tarefaSenderAdapter, ITarefaRepository tarefaRepository)
+        public TarefaService(
+            ITarefaSenderAdapter tarefaSenderAdapter, 
+            ITarefaRepository tarefaRepository,
+            ILogService logService
+            )
         {
             _tarefaSenderAdapter = tarefaSenderAdapter;
             _tarefaRepository = tarefaRepository;
+            _logService = logService;
         }
         /// <summary>
         /// Chama o adapter que envia o objeto para RabbitMQ
@@ -26,8 +31,15 @@ namespace Service.TarefaService {
         /// <returns></returns>
         public bool Add(Tarefa tarefa)
         {
-            tarefa.DataCriacao = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:fff");
-            return _tarefaSenderAdapter.Add(tarefa); 
+            try {
+                tarefa.DataCriacao = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:fff");
+                bool r = _tarefaSenderAdapter.Add(tarefa); 
+                _logService.GravarLogInfo("Nova tarefa na api", tarefa.Descricao);
+                return r;
+            } catch (Exception ex) {
+                _logService.GravarLogErro("Erro ao adicionar tarefa", ex.ToString());
+                throw;
+            }
         }
         /// <summary>
         /// Busca direto no banco de dados
@@ -36,7 +48,12 @@ namespace Service.TarefaService {
         /// <returns></returns>
         public IEnumerable<Tarefa> Search(Tarefa tarefa)
         {
-            return _tarefaRepository.Search(tarefa);
+            try {
+                return _tarefaRepository.Search(tarefa);
+            } catch (Exception ex) {
+                _logService.GravarLogErro("Erro ao buscar tarefas", ex.ToString());
+                throw;
+            }
         }
 
     }

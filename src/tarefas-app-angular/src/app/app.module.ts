@@ -18,13 +18,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-
+import { SpinnerComponent } from './shared/spinner/spinner.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 @NgModule({
   declarations: [
     AppComponent,
     TarefasListComponent,
-    NovaTarefaDialogComponent
+    NovaTarefaDialogComponent,
+    SpinnerComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,9 @@ import { FormsModule } from '@angular/forms';
     MatSnackBarModule,
     HttpClientModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule
   ],
   providers: [],
   bootstrap: [AppComponent]

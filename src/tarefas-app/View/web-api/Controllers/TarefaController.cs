@@ -43,4 +43,18 @@ public class TarefaController : ControllerBase
             return BadRequest(new { message = $"Erro ao buscar tarefas {ex.Message}" });
         }
     }
+
+    [HttpGet()]
+    public IActionResult GetAll()
+    {
+        try
+        {
+            var r = _tarefaService.Search(new Tarefa() { Descricao = ""});
+            return Ok(r);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = $"Erro ao buscar tarefas {ex.Message}" });
+        }
+    }
 }

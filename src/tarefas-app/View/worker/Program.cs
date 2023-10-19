@@ -9,8 +9,10 @@ using System.ComponentModel;
 using System.CodeDom;
 using Domain.Interfaces.Services;
 using Service.TarefaService;
+using Service;
 using Domain.Interfaces.Adapter.Receiver;
 using Adapter.RabbitMQ.Receiver;
+using Domain.Interfaces.Services;
 
 namespace Worker
 {
@@ -41,6 +43,8 @@ namespace Worker
                 .AddTransient<ITarefaRepository, TarefaRepository>()
                 .AddTransient<ITarefaReceiverAdapter, TarefaReceiverAdapter>()
                 .AddTransient<ITarefaReceiverService, TarefaReceiverService>()
+                .AddTransient<ILogRepository, LogRepository>()
+                .AddTransient<ILogService, LogService>()
                 .AddSingleton<App>();
             });
         }

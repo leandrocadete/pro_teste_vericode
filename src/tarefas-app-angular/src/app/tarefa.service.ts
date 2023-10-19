@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { ITarefa } from './model/interface/itarefa';
+import { Tarefa } from './model/entities/tarefa';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class TarefaService {
   }
 
   public Search(tarefa: ITarefa) {
-    return this.http.get<ITarefa[]>(`${this.apiUrl}/Tarefa/${tarefa.descricao}`);
+    return this.http.get<Tarefa[]>(`${this.apiUrl}/Tarefa/${tarefa.descricao}`);
   }
 
 

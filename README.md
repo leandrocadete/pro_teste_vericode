@@ -1,4 +1,4 @@
-# pro_teste_vericode
+# Projeto teste/exemplo com RabbitMQ
 Projeto teste: angular + webApi C# + RabbitMQ
 
 # Características do da Web API

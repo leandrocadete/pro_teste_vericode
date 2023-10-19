@@ -9,6 +9,7 @@ Projeto teste: angular + webApi C# + RabbitMQ
     a) O cadastro é feito utilizando fila pelo RabbitMQ;
     b) A consulta é feita pela web-api
 
+
 # Caracteríticas do Worker
 * Utiliza as portas padrões 5672 e 15672
 
@@ -34,3 +35,7 @@ e em seguida `npm start` ou `ng serve`
 ## RabbitMQ
 * Para executar o rabbitmq foi utiliza a pelo docker 24.0.6
 * Existe o script `run_docker_rabbitMQ.sh` como opção
+
+## Banco de dados SQLite 3
+* banco de dados sqlite 3, com o arquivo e as tabelas já criadas na raiz do projeto Repository
+* O arquivo de banco de dados já se encontra no caminho correto para execução em debbug

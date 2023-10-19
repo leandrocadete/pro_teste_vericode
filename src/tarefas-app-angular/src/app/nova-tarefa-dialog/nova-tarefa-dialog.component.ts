@@ -3,7 +3,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TarefaService } from '../tarefa.service';
 import { ITarefa } from '../model/interface/itarefa';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, RequiredValidator, Validators } from '@angular/forms';
 @Component({
   selector: 'app-nova-tarefa-dialog',
   templateUrl: './nova-tarefa-dialog.component.html',
@@ -12,7 +12,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 export class NovaTarefaDialogComponent implements OnInit {
   public refDialog!: MatDialogRef<NovaTarefaDialogComponent>;
   public formTarefa = new FormGroup({
-    descricao: new FormControl('')
+    descricao: new FormControl('', Validators.required)
   });
 
 
@@ -23,6 +23,11 @@ export class NovaTarefaDialogComponent implements OnInit {
   }
 
   public Add() {
+    if(!this.formTarefa.valid) {
+      this.snack.open("Preencha os campos obrigatórios!", "Ok");
+      return;
+    }
+
     let desc = this.formTarefa.get('descricao')?.value;
 
     let itarefa: ITarefa = {
@@ -39,7 +44,9 @@ export class NovaTarefaDialogComponent implements OnInit {
         console.info(resp);
       },
       error: (err) => {
-        console.error(err)
+        console.error(err); 
+        this.snack.open("Não foi possível realizar a solicitação de tarefa, tente mais tarde!", "Ok");
+        this.refDialog.close();
       },
       complete: () => this.refDialog.close()
     });
